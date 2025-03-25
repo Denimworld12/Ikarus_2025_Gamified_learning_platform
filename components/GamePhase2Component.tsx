@@ -26,9 +26,11 @@ export default function GamePhase2Component() {
 
   // Safe to access localStorage here because the component will only be rendered client-side
   useEffect(() => {
-    const storedName = localStorage.getItem("playerName")
-    if (storedName) {
-      setPlayerName(storedName)
+    if (typeof window !== "undefined") {
+      const storedName = localStorage.getItem("playerName")
+      if (storedName) {
+        setPlayerName(storedName)
+      }
     }
   }, [])
 
@@ -39,10 +41,13 @@ export default function GamePhase2Component() {
         setShowQuestion(false)
         setShowBuilder(true)
         setProgress(80) // Show progress at 80% when builder appears
+        saveProgress(80)
       } else {
         // Move to next question
         setCurrentQuestion(currentQuestion + 1)
-        setProgress(((currentQuestion + 1) / totalQuestions) * 100)
+        const newProgress = ((currentQuestion + 1) / totalQuestions) * 100
+        setProgress(newProgress)
+        saveProgress(newProgress)
       }
     } else {
       // Show chatbot on wrong answer
@@ -50,10 +55,21 @@ export default function GamePhase2Component() {
     }
   }
 
+  const saveProgress = (progressValue: number) => {
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("phase2Progress", progressValue.toString())
+      } catch (error) {
+        console.error("Error saving progress to localStorage:", error)
+      }
+    }
+  }
+
   const handleBuilderComplete = () => {
     setProgress(100)
+    saveProgress(100)
     setTimeout(() => {
-      router.push("/game/phase2-complete")
+      router.push("/game/phase3")
     }, 1500)
   }
 
@@ -62,7 +78,7 @@ export default function GamePhase2Component() {
   }
 
   const confirmSkip = () => {
-    router.push("/game/phase2-complete")
+    router.push("/game/phase3")
   }
 
   return (

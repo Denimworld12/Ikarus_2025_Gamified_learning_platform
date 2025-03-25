@@ -26,18 +26,32 @@ export default function GamePhase1Component() {
 
   // Now safe to access localStorage because this component will only be rendered client-side
   useEffect(() => {
-    const storedName = localStorage.getItem("playerName")
-    if (storedName) {
-      setPlayerName(storedName)
+    if (typeof window !== "undefined") {
+      const storedName = localStorage.getItem("playerName")
+      if (storedName) {
+        setPlayerName(storedName)
+      }
     }
   }, [])
 
   // Handle checkpoint reached
   const handleCheckpointReached = (position: number) => {
     setCurrentPosition(position)
-    setCurrentQuestion(position)
-    setShowQuestion(true)
+    
+    // Save progress to localStorage
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("phase1Position", position.toString())
+      } catch (error) {
+        console.error("Error saving position to localStorage:", error)
+      }
+    }
+
+    // Set progress percentage based on position
     setProgress((position / totalQuestions) * 100)
+
+    // Show question when a checkpoint is reached
+    setShowQuestion(true)
   }
 
   const handleAnswer = (isCorrect: boolean) => {

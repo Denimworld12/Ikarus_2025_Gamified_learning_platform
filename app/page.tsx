@@ -114,7 +114,7 @@ export default function Home() {
           </div>
 
           {/* Start Button with Glitch Effect */}
-          <Link href="/game/phase1">
+          <Link href="/start">
             <motion.button
               className="mt-8 text-3xl font-bold text-white tracking-widest relative z-10 px-6 py-3 bg-blue-600 hover:bg-blue-700 border-2 border-blue-400 rounded-lg"
               whileHover={{ scale: 1.1 }}

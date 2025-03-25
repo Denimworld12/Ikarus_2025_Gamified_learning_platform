@@ -30,9 +30,11 @@ export default function GamePhase3Component() {
 
   // Safe to access localStorage here because the component will only be rendered client-side
   useEffect(() => {
-    const storedName = localStorage.getItem("playerName")
-    if (storedName) {
-      setPlayerName(storedName)
+    if (typeof window !== "undefined") {
+      const storedName = localStorage.getItem("playerName")
+      if (storedName) {
+        setPlayerName(storedName)
+      }
     }
   }, [])
 
@@ -41,6 +43,19 @@ export default function GamePhase3Component() {
       ...prev,
       [game]: true,
     }))
+
+    // Save completed games to localStorage
+    if (typeof window !== "undefined") {
+      try {
+        const updatedGames = {
+          ...completedGames,
+          [game]: true,
+        };
+        localStorage.setItem("phase3CompletedGames", JSON.stringify(updatedGames));
+      } catch (error) {
+        console.error("Error saving completed games to localStorage:", error);
+      }
+    }
 
     // Check if all games are completed
     const allCompleted = Object.values({
