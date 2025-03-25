@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -26,6 +26,15 @@ export default function Phase3() {
     orbital: false,
     fuel: false,
   })
+  const [playerName, setPlayerName] = useState("Explorer")
+
+  // Safely access localStorage on the client side only
+  useEffect(() => {
+    const storedName = localStorage.getItem("playerName")
+    if (storedName) {
+      setPlayerName(storedName)
+    }
+  }, [])
 
   const handleGameComplete = (game: keyof typeof completedGames) => {
     setCompletedGames((prev) => ({
@@ -93,7 +102,7 @@ export default function Phase3() {
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-bold mb-4 text-white">Phase 3: Space Journey</h1>
             <div className="flex items-center gap-4">
-              <div className="text-white font-bold">{localStorage.getItem("playerName") || "Explorer"}</div>
+              <div className="text-white font-bold">{playerName}</div>
               <ProfileIcon />
             </div>
           </div>

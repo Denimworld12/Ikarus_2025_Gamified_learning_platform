@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -21,7 +21,16 @@ export default function Phase2() {
   const [progress, setProgress] = useState(0)
   const [showBuilder, setShowBuilder] = useState(false)
   const [showSkipDialog, setShowSkipDialog] = useState(false)
-  const totalQuestions = questions.phase2.length
+  const [playerName, setPlayerName] = useState("Explorer")
+  const totalQuestions = questions.phase2.length + 1 // +1 for the builder itself
+
+  // Safely access localStorage on the client side only
+  useEffect(() => {
+    const storedName = localStorage.getItem("playerName")
+    if (storedName) {
+      setPlayerName(storedName)
+    }
+  }, [])
 
   const handleAnswer = (isCorrect: boolean) => {
     if (isCorrect) {
@@ -64,7 +73,7 @@ export default function Phase2() {
           <div className="flex justify-between items-center">
             <h1 className="text-3xl font-bold mb-4 text-white">Phase 2: Building the Spaceship</h1>
             <div className="flex items-center gap-4">
-              <div className="text-white font-bold">{localStorage.getItem("playerName") || "Explorer"}</div>
+              <div className="text-white font-bold">{playerName}</div>
               <ProfileIcon />
             </div>
           </div>
