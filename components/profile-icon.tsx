@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { UserRoundIcon as UserRoundPen } from "lucide-react"
 import {
@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
+import { getLocalStorage } from '@/lib/browser'
 
 export default function ProfileIcon() {
   const router = useRouter()
@@ -22,6 +23,11 @@ export default function ProfileIcon() {
     }
     return "Explorer"
   })
+
+  useEffect(() => {
+    const storedName = getLocalStorage('playerName', 'Explorer')
+    setPlayerName(storedName)
+  }, [])
 
   return (
     <DropdownMenu>
