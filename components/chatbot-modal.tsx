@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { SendHorizontal, Bot, User } from "lucide-react"
+import { getChatCompletion } from "@/lib/api"
+import { isBrowser } from "@/lib/browser"
 
 interface ChatbotModalProps {
   isOpen: boolean
@@ -25,9 +27,9 @@ export default function ChatbotModal({ isOpen, onClose, currentSubject }: Chatbo
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
-  // Reset messages when subject changes
+  // Initialize with welcome message
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && messages.length === 0) {
       setMessages([
         {
           role: "assistant",
@@ -35,7 +37,7 @@ export default function ChatbotModal({ isOpen, onClose, currentSubject }: Chatbo
         },
       ])
     }
-  }, [isOpen, currentSubject])
+  }, [isOpen, messages.length, currentSubject])
 
   const handleSendMessage = async () => {
     if (!input.trim()) return
@@ -46,16 +48,44 @@ export default function ChatbotModal({ isOpen, onClose, currentSubject }: Chatbo
     setInput("")
     setIsLoading(true)
 
-    // In a real implementation, this would call the OpenAI API
-    // For now, we'll simulate a response
-    setTimeout(() => {
+    try {
+      // Format messages for API
+      const apiMessages = messages.concat(userMessage).map(msg => ({
+        role: msg.role,
+        content: msg.content
+      }));
+
+      // Call OpenAI API with a subject context
+      const contextMessage = {
+        role: "system",
+        content: `You are Icarus, an educational AI assistant focusing on ${currentSubject}. Provide helpful, accurate information to help students understand space concepts.`
+      };
+
+      // Use API if available, otherwise fallback to simulated response
+      let response;
+      if (isBrowser) {
+        response = await getChatCompletion([contextMessage, ...apiMessages]);
+      } else {
+        response = getSimulatedResponse(input, currentSubject);
+      }
+
+      const botResponse = {
+        role: "assistant" as const,
+        content: response,
+      };
+      
+      setMessages((prev) => [...prev, botResponse]);
+    } catch (error) {
+      console.error("Error getting response:", error);
+      // Fallback to simulated response
       const botResponse = {
         role: "assistant" as const,
         content: getSimulatedResponse(input, currentSubject),
-      }
-      setMessages((prev) => [...prev, botResponse])
-      setIsLoading(false)
-    }, 1000)
+      };
+      setMessages((prev) => [...prev, botResponse]);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

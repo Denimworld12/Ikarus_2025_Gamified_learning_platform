@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { getLocalStorage } from '@/lib/browser'
+import { getLocalStorage } from '@/lib/storage'
 
 export default function ProfileIcon() {
   const router = useRouter()
