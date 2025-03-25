@@ -288,16 +288,16 @@ export default function SpaceshipBuilder({ onComplete }: SpaceshipBuilderProps) 
                   >
                     <div className="absolute top-1 right-2 bg-muted px-2 py-1 rounded text-xs">Outer Layer</div>
                     <div className="absolute bottom-2 right-2">
-                      {positions.outer.length > 0 && (
+                      {positions.outer.length > 0 && positions.outer[0] && (
                         <div className="bg-background border rounded-md p-2 pointer-events-auto flex items-center">
-                          {positions.outer[0].imageUrl && (
+                          {positions.outer[0]?.imageUrl && (
                             <img
-                              src={positions.outer[0].imageUrl || "/placeholder.svg"}
-                              alt={positions.outer[0].name}
+                              src={positions.outer[0]?.imageUrl || "/placeholder.svg"}
+                              alt={positions.outer[0]?.name}
                               className="w-8 h-8 object-contain mr-2"
                             />
                           )}
-                          {positions.outer[0].name}
+                          {positions.outer[0]?.name}
                         </div>
                       )}
                     </div>

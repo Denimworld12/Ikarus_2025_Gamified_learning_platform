@@ -32,7 +32,7 @@ export default function ZeroGravityNavigation({ onComplete }: ZeroGravityNavigat
     velocityY: 0,
     rotation: 0,
   })
-  const animationFrameRef = useRef<number>()
+  const animationFrameRef = useRef<number | null>(null)
 
   const CANVAS_WIDTH = 600
   const CANVAS_HEIGHT = 600

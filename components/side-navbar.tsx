@@ -7,10 +7,10 @@ import { motion } from "framer-motion"
 import { Star, Trophy, Play, Users2, UserRoundIcon as UserRoundPen, Settings } from "lucide-react"
 
 const navItems = [
-  { id: 1, icon: <Star size={24} />, label: "Status", link: "/status" },
+  { id: 1, icon: <Star size={24} />, label: "Status", link: "/" },
   { id: 2, icon: <Trophy size={24} />, label: "Achievements", link: "/achievements" },
   { id: 3, icon: <Play size={24} />, label: "Start", link: "/start" },
-  { id: 4, icon: <Users2 size={24} />, label: "Friends", link: "/friends" },
+  { id: 4, icon: <Users2 size={24} />, label: "Friends", link: "/profile" },
   { id: 5, icon: <UserRoundPen size={24} />, label: "Profile", link: "/profile" },
   { id: 6, icon: <Settings size={24} />, label: "Settings", link: "/settings" },
 ]
