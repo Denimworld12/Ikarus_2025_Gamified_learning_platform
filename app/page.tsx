@@ -23,7 +23,7 @@ export default function Home() {
       <div className="container mx-auto px-4 py-12">
         <div className="flex flex-col items-center justify-center">
           {/* Title */}
-          <h1 className="text-4xl font-bold text-white mb-6 tracking-wider">Command Center</h1>
+          <h1 className="text-4xl font-bold text-white mb-6 tracking-wider">HOME</h1>
 
           {/* Welcome Message */}
           <div className="bg-blue-800/30 rounded-xl p-6 border border-blue-500/30 mb-8 text-center w-full max-w-3xl">
