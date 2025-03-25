@@ -13,6 +13,7 @@ import PlanetaryAnalysisChallenge from "@/components/planetary-analysis-challeng
 import ChatbotModal from "@/components/chatbot-modal"
 import SkipDialog from "@/components/skip-dialog"
 import ProfileIcon from "@/components/profile-icon"
+import { getLocalStorage, setLocalStorage } from "@/lib/storage"
 
 export default function GamePhase4Component() {
   const router = useRouter()
@@ -30,12 +31,8 @@ export default function GamePhase4Component() {
 
   // Safe to access localStorage here because the component will only be rendered client-side
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedName = localStorage.getItem("playerName")
-      if (storedName) {
-        setPlayerName(storedName)
-      }
-    }
+    const storedName = getLocalStorage('playerName', 'Explorer')
+    setPlayerName(storedName)
   }, [])
 
   const handleGameComplete = (game: keyof typeof completedGames) => {
@@ -45,17 +42,11 @@ export default function GamePhase4Component() {
     }))
 
     // Save completed games to localStorage
-    if (typeof window !== "undefined") {
-      try {
-        const updatedGames = {
-          ...completedGames,
-          [game]: true,
-        };
-        localStorage.setItem("phase4CompletedGames", JSON.stringify(updatedGames));
-      } catch (error) {
-        console.error("Error saving completed games to localStorage:", error);
-      }
-    }
+    const updatedGames = {
+      ...completedGames,
+      [game]: true,
+    };
+    setLocalStorage('phase4CompletedGames', updatedGames);
 
     // Check if all games are completed
     const allCompleted = Object.values({

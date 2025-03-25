@@ -12,17 +12,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { getLocalStorage } from '@/lib/storage'
+import { getLocalStorage } from '../lib/storage'
 
 export default function ProfileIcon() {
   const router = useRouter()
-  const [playerName, setPlayerName] = useState(() => {
-    // Get player name from localStorage (client-side only)
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("playerName") || "Explorer"
-    }
-    return "Explorer"
-  })
+  const [playerName, setPlayerName] = useState("Explorer")
 
   useEffect(() => {
     const storedName = getLocalStorage('playerName', 'Explorer')

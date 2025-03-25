@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Flag } from "lucide-react"
 import Confetti from "@/components/confetti"
 import ProfileIcon from "@/components/profile-icon"
+import { getLocalStorage } from "@/lib/storage"
 
 export default function GameComplete() {
   const router = useRouter()
@@ -14,10 +15,8 @@ export default function GameComplete() {
 
   useEffect(() => {
     // Get player name from localStorage
-    const storedName = localStorage.getItem("playerName")
-    if (storedName) {
-      setPlayerName(storedName)
-    }
+    const storedName = getLocalStorage('playerName', 'Explorer')
+    setPlayerName(storedName)
 
     // Trigger confetti after component mounts
     setShowConfetti(true)

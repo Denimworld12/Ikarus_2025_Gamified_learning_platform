@@ -12,8 +12,9 @@ const GamePhase3Component = dynamic(() => import('@/components/GamePhase3Compone
   )
 })
 
-// This tells Next.js to always render this page dynamically
+// Force dynamic rendering with no static rendering
 export const dynamic = 'force-dynamic'
+export const runtime = 'edge'
 
 export default function Phase3Page() {
   return <GamePhase3Component />

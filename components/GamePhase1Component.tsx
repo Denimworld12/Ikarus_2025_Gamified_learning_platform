@@ -12,6 +12,7 @@ import ChatbotModal from "@/components/chatbot-modal"
 import { questions } from "@/lib/questions"
 import SkipDialog from "@/components/skip-dialog"
 import ProfileIcon from "@/components/profile-icon"
+import { getLocalStorage, setLocalStorage } from "@/lib/storage"
 
 export default function GamePhase1Component() {
   const router = useRouter()
@@ -26,12 +27,8 @@ export default function GamePhase1Component() {
 
   // Now safe to access localStorage because this component will only be rendered client-side
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedName = localStorage.getItem("playerName")
-      if (storedName) {
-        setPlayerName(storedName)
-      }
-    }
+    const storedName = getLocalStorage('playerName', 'Explorer')
+    setPlayerName(storedName)
   }, [])
 
   // Handle checkpoint reached
@@ -39,13 +36,7 @@ export default function GamePhase1Component() {
     setCurrentPosition(position)
     
     // Save progress to localStorage
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem("phase1Position", position.toString())
-      } catch (error) {
-        console.error("Error saving position to localStorage:", error)
-      }
-    }
+    setLocalStorage('phase1Position', position.toString())
 
     // Set progress percentage based on position
     setProgress((position / totalQuestions) * 100)

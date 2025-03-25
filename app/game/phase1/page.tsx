@@ -12,8 +12,9 @@ const GamePhase1Component = dynamic(() => import('@/components/GamePhase1Compone
   )
 })
 
-// This tells Next.js to always render this page dynamically
+// Force dynamic rendering with no static rendering
 export const dynamic = 'force-dynamic'
+export const runtime = 'edge'
 
 export default function Phase1Page() {
   return <GamePhase1Component />

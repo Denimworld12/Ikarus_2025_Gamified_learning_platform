@@ -12,6 +12,7 @@ import ChatbotModal from "@/components/chatbot-modal"
 import { questions } from "@/lib/questions"
 import SkipDialog from "@/components/skip-dialog"
 import ProfileIcon from "@/components/profile-icon"
+import { getLocalStorage, setLocalStorage } from "@/lib/storage"
 
 export default function GamePhase2Component() {
   const router = useRouter()
@@ -26,12 +27,8 @@ export default function GamePhase2Component() {
 
   // Safe to access localStorage here because the component will only be rendered client-side
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedName = localStorage.getItem("playerName")
-      if (storedName) {
-        setPlayerName(storedName)
-      }
-    }
+    const storedName = getLocalStorage('playerName', 'Explorer')
+    setPlayerName(storedName)
   }, [])
 
   const handleAnswer = (isCorrect: boolean) => {
@@ -56,13 +53,7 @@ export default function GamePhase2Component() {
   }
 
   const saveProgress = (progressValue: number) => {
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem("phase2Progress", progressValue.toString())
-      } catch (error) {
-        console.error("Error saving progress to localStorage:", error)
-      }
-    }
+    setLocalStorage('phase2Progress', progressValue.toString())
   }
 
   const handleBuilderComplete = () => {

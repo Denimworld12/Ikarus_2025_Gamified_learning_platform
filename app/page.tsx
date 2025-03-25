@@ -4,16 +4,15 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import SideNavbar from "@/components/side-navbar"
+import { getLocalStorage } from "@/lib/storage"
 
 export default function Home() {
   const [playerName, setPlayerName] = useState("Explorer")
 
   useEffect(() => {
     // Get player name from localStorage
-    const storedName = localStorage.getItem("playerName")
-    if (storedName) {
-      setPlayerName(storedName)
-    }
+    const storedName = getLocalStorage('playerName', 'Explorer')
+    setPlayerName(storedName)
   }, [])
 
   return (

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
+import { getLocalStorage } from "@/lib/storage"
 
 export default function Start() {
   const router = useRouter()
@@ -10,10 +11,8 @@ export default function Start() {
 
   useEffect(() => {
     // Get player name from localStorage
-    const storedName = localStorage.getItem("playerName")
-    if (storedName) {
-      setPlayerName(storedName)
-    }
+    const storedName = getLocalStorage('playerName', 'Explorer')
+    setPlayerName(storedName)
   }, [])
 
   const handleStart = () => {

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { setLocalStorage } from "@/lib/storage"
 
 export default function Login() {
   const [showPortal, setShowPortal] = useState(false)
@@ -71,7 +72,7 @@ export default function Login() {
 
     if (validateForm()) {
       // Store player name in localStorage
-      localStorage.setItem("playerName", formData.username)
+      setLocalStorage("playerName", formData.username)
 
       setShowPortal(true)
       setTimeout(() => router.push("/start"), 3000) // Redirect after portal animation

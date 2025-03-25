@@ -12,8 +12,9 @@ const GamePhase4Component = dynamic(() => import('@/components/GamePhase4Compone
   )
 })
 
-// This tells Next.js to always render this page dynamically
+// Force dynamic rendering with no static rendering
 export const dynamic = 'force-dynamic'
+export const runtime = 'edge'
 
 export default function Phase4Page() {
   return <GamePhase4Component />
