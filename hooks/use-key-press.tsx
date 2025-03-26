@@ -3,9 +3,18 @@
 import { useState, useEffect } from "react"
 
 export function useKeyPress(targetKey: string) {
+  const [mounted, setMounted] = useState(false)
   const [isPressed, setIsPressed] = useState(false)
 
+  // Handle mounting
   useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // Handle key events
+  useEffect(() => {
+    if (!mounted) return
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === targetKey) {
         setIsPressed(true)
@@ -25,7 +34,7 @@ export function useKeyPress(targetKey: string) {
       window.removeEventListener("keydown", handleKeyDown)
       window.removeEventListener("keyup", handleKeyUp)
     }
-  }, [targetKey])
+  }, [targetKey, mounted])
 
   return isPressed
 }

@@ -11,6 +11,7 @@ interface GameMapProps {
 
 export default function GameMap({ currentPosition, totalPositions, onCheckpointReached }: GameMapProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [mounted, setMounted] = useState(false)
   const [playerPosition, setPlayerPosition] = useState({ x: 50, y: 200 })
   const [checkpoints, setCheckpoints] = useState<{ x: number; y: number; reached: boolean }[]>([])
   const [currentCheckpoint, setCurrentCheckpoint] = useState(0)
@@ -21,8 +22,15 @@ export default function GameMap({ currentPosition, totalPositions, onCheckpointR
   const upPressed = useKeyPress("ArrowUp")
   const downPressed = useKeyPress("ArrowDown")
 
+  // Handle mounting
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   // Initialize checkpoints
   useEffect(() => {
+    if (!mounted) return
+
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -43,10 +51,12 @@ export default function GameMap({ currentPosition, totalPositions, onCheckpointR
       const startPos = newCheckpoints[currentPosition] || newCheckpoints[0]
       setPlayerPosition({ x: startPos.x, y: startPos.y })
     }
-  }, [totalPositions, currentPosition])
+  }, [totalPositions, currentPosition, mounted])
 
   // Handle player movement
   useEffect(() => {
+    if (!mounted) return
+
     const moveSpeed = 5
 
     if (leftPressed) {
@@ -92,10 +102,13 @@ export default function GameMap({ currentPosition, totalPositions, onCheckpointR
     checkpoints,
     currentCheckpoint,
     onCheckpointReached,
+    mounted,
   ])
 
   // Draw the game map
   useEffect(() => {
+    if (!mounted) return
+
     const canvas = canvasRef.current
     if (!canvas) return
 
@@ -167,7 +180,18 @@ export default function GameMap({ currentPosition, totalPositions, onCheckpointR
     ctx.lineWidth = 2
     ctx.arc(playerPosition.x, playerPosition.y + 5, 8, 0, Math.PI) // Smile
     ctx.stroke()
-  }, [playerPosition, checkpoints])
+  }, [playerPosition, checkpoints, mounted])
+
+  // Don't render until mounted
+  if (!mounted) {
+    return (
+      <div className="bg-card rounded-lg p-4 h-[400px] w-full relative">
+        <div className="w-full h-full flex items-center justify-center">
+          <div className="text-gray-500">Loading game map...</div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="bg-card rounded-lg p-4 h-[400px] w-full relative">

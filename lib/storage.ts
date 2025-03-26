@@ -9,7 +9,7 @@ export function getLocalStorage<T>(key: string, defaultValue: T): T {
   }
   
   try {
-    const item = localStorage.getItem(key);
+    const item = window.localStorage.getItem(key);
     if (item === null) {
       return defaultValue;
     }
@@ -34,7 +34,7 @@ export function getLocalStorage<T>(key: string, defaultValue: T): T {
     
     return item as unknown as T;
   } catch (error) {
-    console.error('Error accessing localStorage:', error);
+    console.error(`Error accessing localStorage for key "${key}":`, error);
     return defaultValue;
   }
 }
@@ -50,11 +50,27 @@ export function setLocalStorage<T>(key: string, value: T): void {
   
   try {
     if (typeof value === 'object') {
-      localStorage.setItem(key, JSON.stringify(value));
+      window.localStorage.setItem(key, JSON.stringify(value));
     } else {
-      localStorage.setItem(key, String(value));
+      window.localStorage.setItem(key, String(value));
     }
   } catch (error) {
-    console.error('Error setting localStorage:', error);
+    console.error(`Error setting localStorage for key "${key}":`, error);
+  }
+}
+
+/**
+ * Clear all items from localStorage
+ * No-op if localStorage is not available (during SSR)
+ */
+export function clearLocalStorage(): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  
+  try {
+    window.localStorage.clear();
+  } catch (error) {
+    console.error('Error clearing localStorage:', error);
   }
 } 

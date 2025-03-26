@@ -16,6 +16,7 @@ import { getLocalStorage, setLocalStorage } from "@/lib/storage"
 
 export default function GamePhase1Component() {
   const router = useRouter()
+  const [hydrated, setHydrated] = useState(false)
   const [currentPosition, setCurrentPosition] = useState(0)
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [showQuestion, setShowQuestion] = useState(false)
@@ -25,40 +26,49 @@ export default function GamePhase1Component() {
   const [playerName, setPlayerName] = useState("Explorer")
   const totalQuestions = questions.phase1.length
 
-  // Now safe to access localStorage because this component will only be rendered client-side
+  // Handle hydration
   useEffect(() => {
-    const storedName = getLocalStorage('playerName', 'Explorer')
-    setPlayerName(storedName)
+    setHydrated(true)
   }, [])
+
+  // Load saved state from localStorage
+  useEffect(() => {
+    if (!hydrated) return
+
+    const savedPosition = getLocalStorage('phase1Position', 0)
+    const savedProgress = getLocalStorage('phase1Progress', 0)
+    const savedName = getLocalStorage('playerName', 'Explorer')
+
+    setCurrentPosition(savedPosition)
+    setProgress(savedProgress)
+    setPlayerName(savedName)
+  }, [hydrated])
+
+  // Save progress to localStorage
+  useEffect(() => {
+    if (!hydrated) return
+
+    setLocalStorage('phase1Position', currentPosition)
+    setLocalStorage('phase1Progress', progress)
+  }, [currentPosition, progress, hydrated])
 
   // Handle checkpoint reached
   const handleCheckpointReached = (position: number) => {
     setCurrentPosition(position)
-    
-    // Save progress to localStorage
-    setLocalStorage('phase1Position', position.toString())
-
-    // Set progress percentage based on position
     setProgress((position / totalQuestions) * 100)
-
-    // Show question when a checkpoint is reached
     setShowQuestion(true)
   }
 
   const handleAnswer = (isCorrect: boolean) => {
     if (isCorrect) {
-      // Hide question on correct answer
       setShowQuestion(false)
 
-      // Check if we've completed all questions
       if (currentQuestion + 1 >= totalQuestions) {
-        // Phase complete animation and redirect
         setTimeout(() => {
           router.push("/game/phase1-complete")
         }, 2000)
       }
     } else {
-      // Show chatbot on wrong answer
       setShowChatbot(true)
     }
   }
@@ -69,6 +79,15 @@ export default function GamePhase1Component() {
 
   const confirmSkip = () => {
     router.push("/game/phase1-complete")
+  }
+
+  // Don't render until hydration is complete
+  if (!hydrated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-900 to-indigo-900 dark:from-slate-900 dark:to-indigo-950">
+        <div className="text-white text-xl">Loading game...</div>
+      </div>
+    )
   }
 
   return (

@@ -17,10 +17,12 @@ const navItems = [
 
 export default function SideNavbar() {
   const pathname = usePathname()
+  const [mounted, setMounted] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
 
-  // Check if we're on mobile
+  // Handle client-side mounting and mobile detection
   useEffect(() => {
+    setMounted(true)
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth < 768)
     }
@@ -33,9 +35,18 @@ export default function SideNavbar() {
     }
   }, [])
 
+  // Don't render anything until mounted to prevent hydration mismatch
+  if (!mounted) {
+    return null
+  }
+
   return (
     <div
-      className={`${isMobile ? "fixed bottom-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md p-2" : "fixed left-4 top-1/2 -translate-y-1/2 flex flex-col space-y-6"}`}
+      className={`${
+        isMobile
+          ? "fixed bottom-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md p-2"
+          : "fixed left-4 top-1/2 -translate-y-1/2 flex flex-col space-y-6"
+      }`}
     >
       {isMobile ? (
         // Mobile bottom navigation
@@ -43,7 +54,9 @@ export default function SideNavbar() {
           {navItems.map((item) => (
             <Link key={item.id} href={item.link} className="flex flex-col items-center py-2">
               <motion.div
-                className={`flex items-center justify-center w-12 h-12 rounded-full ${pathname === item.link ? "bg-blue-900 text-blue-300" : "bg-black text-blue-500"}`}
+                className={`flex items-center justify-center w-12 h-12 rounded-full ${
+                  pathname === item.link ? "bg-blue-900 text-blue-300" : "bg-black text-blue-500"
+                }`}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
@@ -65,7 +78,9 @@ export default function SideNavbar() {
 
               {/* Icon with Link */}
               <motion.div
-                className={`flex items-center justify-center w-14 h-14 rounded-full ${pathname === item.link ? "bg-blue-900 text-blue-300" : "bg-black text-blue-500"} border border-blue-800`}
+                className={`flex items-center justify-center w-14 h-14 rounded-full ${
+                  pathname === item.link ? "bg-blue-900 text-blue-300" : "bg-black text-blue-500"
+                } border border-blue-800`}
                 whileHover={{
                   scale: 1.2,
                   rotate: 5,

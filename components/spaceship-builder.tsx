@@ -17,6 +17,13 @@ interface SpaceshipPart {
   imageUrl?: string
 }
 
+interface Positions {
+  top: SpaceshipPart[]
+  middle: SpaceshipPart[]
+  bottom: SpaceshipPart[]
+  outer: SpaceshipPart[]
+}
+
 export default function SpaceshipBuilder({ onComplete }: SpaceshipBuilderProps) {
   const [message, setMessage] = useState("")
   const [isComplete, setIsComplete] = useState(false)
@@ -55,7 +62,7 @@ export default function SpaceshipBuilder({ onComplete }: SpaceshipBuilderProps) 
 
   const [availableParts, setAvailableParts] = useState<SpaceshipPart[]>(initialParts)
 
-  const [positions, setPositions] = useState({
+  const [positions, setPositions] = useState<Positions>({
     top: [],
     middle: [],
     bottom: [],
@@ -290,14 +297,14 @@ export default function SpaceshipBuilder({ onComplete }: SpaceshipBuilderProps) 
                     <div className="absolute bottom-2 right-2">
                       {positions.outer.length > 0 && positions.outer[0] && (
                         <div className="bg-background border rounded-md p-2 pointer-events-auto flex items-center">
-                          {positions.outer[0]?.imageUrl && (
+                          {positions.outer[0].imageUrl && (
                             <img
-                              src={positions.outer[0]?.imageUrl || "/placeholder.svg"}
-                              alt={positions.outer[0]?.name}
+                              src={positions.outer[0].imageUrl || "/placeholder.svg"}
+                              alt={positions.outer[0].name}
                               className="w-8 h-8 object-contain mr-2"
                             />
                           )}
-                          {positions.outer[0]?.name}
+                          {positions.outer[0].name}
                         </div>
                       )}
                     </div>
