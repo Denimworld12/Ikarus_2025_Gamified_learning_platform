@@ -12,16 +12,40 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { getLocalStorage } from '../lib/storage'
+import { getLocalStorage } from "@/lib/storage"
 
 export default function ProfileIcon() {
   const router = useRouter()
-  const [playerName, setPlayerName] = useState("Explorer")
+  const [mounted, setMounted] = useState(false)
+  const [playerName, setPlayerName] = useState<string>("Explorer")
 
+  // Handle mounting
   useEffect(() => {
-    const storedName = getLocalStorage('playerName', 'Explorer')
-    setPlayerName(storedName)
+    setMounted(true)
   }, [])
+
+  // Load player name from localStorage
+  useEffect(() => {
+    if (!mounted) return
+
+    const name = getLocalStorage<string>("playerName")
+    if (name) {
+      setPlayerName(name)
+    }
+  }, [mounted])
+
+  // Don't render until mounted
+  if (!mounted) {
+    return (
+      <Button
+        variant="ghost"
+        size="icon"
+        className="rounded-full bg-blue-900/50 hover:bg-blue-800 text-white border border-blue-700"
+      >
+        <UserRoundPen className="h-5 w-5" />
+      </Button>
+    )
+  }
 
   return (
     <DropdownMenu>

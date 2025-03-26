@@ -22,6 +22,26 @@ const nextConfig = {
     parallelServerCompiles: true,
     externalDir: true,
   },
+  // Add configuration for client-side components
+  reactStrictMode: true,
+  // Disable static optimization for game pages
+  unstable_runtimeJS: true,
+  unstable_JsPreload: false,
+  // Configure page extensions
+  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
+  // Configure build output
+  output: 'standalone',
+  // Configure webpack
+  webpack: (config, { isServer }) => {
+    // Add fallback for node modules
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      net: false,
+      tls: false,
+    }
+    return config
+  },
 }
 
 mergeConfig(nextConfig, userConfig)

@@ -16,20 +16,38 @@ import { getLocalStorage, setLocalStorage } from "@/lib/storage"
 
 export default function GamePhase2Component() {
   const router = useRouter()
+  const [mounted, setMounted] = useState(false)
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [showQuestion, setShowQuestion] = useState(true)
   const [showBuilder, setShowBuilder] = useState(false)
   const [showChatbot, setShowChatbot] = useState(false)
   const [progress, setProgress] = useState(0)
   const [showSkipDialog, setShowSkipDialog] = useState(false)
-  const [playerName, setPlayerName] = useState("Explorer")
+  const [playerName, setPlayerName] = useState<string>("")
   const totalQuestions = questions.phase2.length + 1 // +1 for the builder itself
 
-  // Safe to access localStorage here because the component will only be rendered client-side
+  // Handle mounting
   useEffect(() => {
-    const storedName = getLocalStorage('playerName', 'Explorer')
-    setPlayerName(storedName)
+    setMounted(true)
   }, [])
+
+  // Load player name and progress from localStorage
+  useEffect(() => {
+    if (!mounted) return
+
+    const name = getLocalStorage<string>("playerName")
+    const savedProgress = getLocalStorage<number>("phase2Progress")
+
+    if (name) {
+      setPlayerName(name)
+    } else {
+      router.push("/login")
+    }
+
+    if (savedProgress !== null) {
+      setProgress(savedProgress)
+    }
+  }, [mounted, router])
 
   const handleAnswer = (isCorrect: boolean) => {
     if (isCorrect) {
@@ -38,13 +56,13 @@ export default function GamePhase2Component() {
         setShowQuestion(false)
         setShowBuilder(true)
         setProgress(80) // Show progress at 80% when builder appears
-        saveProgress(80)
+        setLocalStorage("phase2Progress", 80)
       } else {
         // Move to next question
         setCurrentQuestion(currentQuestion + 1)
         const newProgress = ((currentQuestion + 1) / totalQuestions) * 100
         setProgress(newProgress)
-        saveProgress(newProgress)
+        setLocalStorage("phase2Progress", newProgress)
       }
     } else {
       // Show chatbot on wrong answer
@@ -52,13 +70,9 @@ export default function GamePhase2Component() {
     }
   }
 
-  const saveProgress = (progressValue: number) => {
-    setLocalStorage('phase2Progress', progressValue.toString())
-  }
-
   const handleBuilderComplete = () => {
     setProgress(100)
-    saveProgress(100)
+    setLocalStorage("phase2Progress", 100)
     setTimeout(() => {
       router.push("/game/phase3")
     }, 1500)
@@ -70,6 +84,15 @@ export default function GamePhase2Component() {
 
   const confirmSkip = () => {
     router.push("/game/phase3")
+  }
+
+  // Don't render until mounted
+  if (!mounted) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-gray-500">Loading game...</div>
+      </div>
+    )
   }
 
   return (

@@ -14,59 +14,76 @@ import SkipDialog from "@/components/skip-dialog"
 import ProfileIcon from "@/components/profile-icon"
 import { getLocalStorage, setLocalStorage } from "@/lib/storage"
 
-export default function GamePhase1Component() {
+interface GamePhase1ComponentProps {
+  onComplete: () => void
+}
+
+export default function GamePhase1Component({ onComplete }: GamePhase1ComponentProps) {
   const router = useRouter()
-  const [hydrated, setHydrated] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const [currentPosition, setCurrentPosition] = useState(0)
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [showQuestion, setShowQuestion] = useState(false)
   const [showChatbot, setShowChatbot] = useState(false)
   const [progress, setProgress] = useState(0)
   const [showSkipDialog, setShowSkipDialog] = useState(false)
-  const [playerName, setPlayerName] = useState("Explorer")
+  const [playerName, setPlayerName] = useState<string>("")
   const totalQuestions = questions.phase1.length
 
-  // Handle hydration
+  // Handle mounting
   useEffect(() => {
-    setHydrated(true)
+    setMounted(true)
   }, [])
 
-  // Load saved state from localStorage
+  // Load player name from localStorage
   useEffect(() => {
-    if (!hydrated) return
+    if (!mounted) return
 
-    const savedPosition = getLocalStorage('phase1Position', 0)
-    const savedProgress = getLocalStorage('phase1Progress', 0)
-    const savedName = getLocalStorage('playerName', 'Explorer')
+    const name = getLocalStorage<string>("playerName")
+    if (name) {
+      setPlayerName(name)
+    } else {
+      router.push("/login")
+    }
+  }, [mounted, router])
 
-    setCurrentPosition(savedPosition)
-    setProgress(savedProgress)
-    setPlayerName(savedName)
-  }, [hydrated])
-
-  // Save progress to localStorage
+  // Load game progress from localStorage
   useEffect(() => {
-    if (!hydrated) return
+    if (!mounted) return
 
-    setLocalStorage('phase1Position', currentPosition)
-    setLocalStorage('phase1Progress', progress)
-  }, [currentPosition, progress, hydrated])
+    const savedPosition = getLocalStorage<number>("phase1Position")
+    const savedQuestion = getLocalStorage<number>("phase1Question")
+    const savedProgress = getLocalStorage<number>("phase1Progress")
+
+    if (savedPosition !== null) setCurrentPosition(savedPosition)
+    if (savedQuestion !== null) setCurrentQuestion(savedQuestion)
+    if (savedProgress !== null) setProgress(savedProgress)
+  }, [mounted])
+
+  // Save game progress to localStorage
+  useEffect(() => {
+    if (!mounted) return
+
+    setLocalStorage("phase1Position", currentPosition)
+    setLocalStorage("phase1Question", currentQuestion)
+    setLocalStorage("phase1Progress", progress)
+  }, [currentPosition, currentQuestion, progress, mounted])
 
   // Handle checkpoint reached
   const handleCheckpointReached = (position: number) => {
-    setCurrentPosition(position)
-    setProgress((position / totalQuestions) * 100)
-    setShowQuestion(true)
+    if (position > currentPosition) {
+      setCurrentPosition(position)
+      setProgress((position / totalQuestions) * 100)
+      setShowQuestion(true)
+    }
   }
 
   const handleAnswer = (isCorrect: boolean) => {
     if (isCorrect) {
       setShowQuestion(false)
-
-      if (currentQuestion + 1 >= totalQuestions) {
-        setTimeout(() => {
-          router.push("/game/phase1-complete")
-        }, 2000)
+      setCurrentQuestion((prev) => prev + 1)
+      if (currentQuestion >= totalQuestions - 1) {
+        onComplete()
       }
     } else {
       setShowChatbot(true)
@@ -78,14 +95,14 @@ export default function GamePhase1Component() {
   }
 
   const confirmSkip = () => {
-    router.push("/game/phase1-complete")
+    setCurrentQuestion((prev) => prev + 1)
   }
 
-  // Don't render until hydration is complete
-  if (!hydrated) {
+  // Don't render until mounted
+  if (!mounted) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-900 to-indigo-900 dark:from-slate-900 dark:to-indigo-950">
-        <div className="text-white text-xl">Loading game...</div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-gray-500">Loading game...</div>
       </div>
     )
   }
